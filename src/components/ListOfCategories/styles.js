@@ -7,6 +7,7 @@ export const List = styled.ul`
   width: 100%;
   margin-bottom: 20px;
   margin-top: 10px;
+  height: 100px;
 
   ${props => props.fixed && css`
   {

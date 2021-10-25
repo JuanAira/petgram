@@ -1,31 +1,49 @@
-import React, { Fragment } from 'react'
-import { Article, Button, Img, ImgWrapper } from './styles'
-import { MdFavorite, MdFavoriteBorder } from 'react-icons/md'
-import { useNearScreen } from '../../hooks/useNearScreen'
+import React from 'react'
+import {
+  ImgWrapper,
+  Img,
+  Article
+} from './styles'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
+import { useNearScreen } from '../../hooks/useNearScreen'
+import { FavButton } from '../FavButton/index'
+import { UseLikeMutation } from '../../container/ToggleLikeMutation'
 
-const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60'
+const DEFAULT_IMAGE = 'https://res.cloudinary.com/midudev/image/upload/w_300/q_80/v1560262103/dogs.png'
 
-export const PhotoCard = ({ id = 0, likes = 0, src = DEFAULT_IMAGE }) => {
+export const PhotoCard = ({ id, likes = 0, src = DEFAULT_IMAGE }) => {
+  const key = `like-${id}`
+  const [liked, setLiked] = useLocalStorage(key, false)
   const [show, ref] = useNearScreen()
-  const [like, setLike] = useLocalStorage(`like-${id}`)
+  const { toggleLikePhoto } = UseLikeMutation()
 
-  const Icon = like ? MdFavorite : MdFavoriteBorder
+  const handleFavClick = () => {
+    setLiked(!liked)
+    toggleLikePhoto({
+      variables: {
+        input: { id }
+      }
+    })
+  }
 
   return (
     <Article ref={ref}>
-      {show &&
+      {show && (
         <>
-          <a href={`/detail/${id}`}>
+          <a
+            href={`/detail/${id}`}
+          >
             <ImgWrapper>
               <Img src={src} />
             </ImgWrapper>
           </a>
-
-          <Button>
-            <Icon onClick={() => setLike(!like)} size='24px' /> {likes} likes!
-          </Button>
-        </>}
+          <FavButton
+            liked={liked}
+            likes={likes}
+            onClick={handleFavClick}
+          />
+        </>
+      )}
     </Article>
   )
 }
